@@ -1,0 +1,169 @@
+<?php
+session_start();
+include("includes/connection.php");
+include("functions/functions.php");
+if(!isset($_SESSION['user_email'])){
+	header("location:indexpage.php");
+}
+else
+{
+	?>
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Welcome User</title>
+		<link rel="stylesheet" href="home_style.css" media="all">
+	</head>
+
+	<body>
+		
+		<!--container start--> 
+		<div class ="container">
+			<!--head_wrap start--> 
+			<div id ="head_wrap">
+				<!--header start--> 
+				<div id="header">
+					<ul id="menu">
+						<li><a href="home.php">Home</a></li>
+						<li><a href="members.php">Members</a></li>
+						<strong>Topics:</strong>
+						<?php
+						 $get_topics="select * from topics";
+						$run_topics=mysqli_query($con,$get_topics);
+
+						while($row=mysqli_fetch_array($run_topics))
+						{
+							$topic_id=$row['topic_id'];
+							$topic_title=$row['topic_title'];
+
+						echo "<li><a href='topic.php?topic=$topic_id' >$topic_title</a></li> ";
+
+						}
+						?>
+					</ul>
+					<form method="get" action="results.php" id="form1">
+						<input type="text" name="user_query" placeholder="Search a topic"/>
+						<input type="submit" name="Search" value="Search"/>
+					</form>
+ 				</div>
+				<!--header ends--> 
+			</div>
+			<!--content starts-->
+			<div class="content">
+				<!--user timeline starts-->
+
+				<div id="user_timeline">
+					<div id="user_details">
+						<?php
+						$user=$_SESSION['user_email'];
+						$get_user="select * from users where user_email='$user'";
+						$run_user=mysqli_query($con,$get_user);
+						$row=mysqli_fetch_array($run_user);
+
+						$user_id=$row['user_id'];
+						$user_name=$row['user_name'];
+						$user_country=$row['user_country'];
+						$user_image=$row['user_image'];
+						$register_date=$row['register_date'];
+						$last_login=$row['last_login'];
+
+						$user_posts="select * from post where user_id='$user_id'";
+						
+						$run_posts=mysqli_query($con,$user_posts);
+						if(mysqli_query($con,$user_posts))
+						{
+						$posts=mysqli_num_rows($run_posts);
+					}
+					else
+						$posts=20;
+
+						echo"
+							
+						<center><img src='user/user_images/$user_image' width='200' height='200' alt=$user_image/></center>
+
+						<div id='user_mention'>
+						<p><strong>Name</strong> $user_name</p>
+						<p><strong>Country </strong>$user_country</p>
+						<p><strong>Last Login </strong>$last_login</p>
+						<p><strong>Member Since </strong>$register_date</p>
+ 
+						<p><a href='my_messages.php?u_id=$user_id'> Messages</a></p>
+						<p><a href='my_posts.php?u_id=$user_id' >My Posts ($posts)</a></p>
+						<p><a href='edit_profile.php?u_id=$user_id'>Edit My Account</a></p>
+						<p><a href='logout.php'>Logout</a></p>
+						</div>
+						";
+						?>
+					</div>
+				</div>
+				<!--user timeline ends-->
+				<!--content timeline starts-->
+				<div id ="msg">
+					
+			
+				<?php
+
+							if(isset($_GET['u_id'])){
+							$u_id=$_GET['u_id'];
+							}
+
+
+							$select="select * from users where user_id='$u_id'";
+
+
+							$run = mysqli_query($con,$select);
+							$row2 = mysqli_fetch_array($run);
+
+							$image=$row2['user_image'];
+							$name=$row2['user_name'];
+							$register_date=$row2['register_date'];
+
+
+
+				?>
+
+				<h2>Send a message to <span style="color: red;"><?php echo "$name"; ?></span></h2>
+				<form action="messages.php?u_id=<?php echo $u_id?>" method="post" id="f">
+					<input type="text" name="msg_title" placeholder="Message Subject..." size="49"/>
+					<textarea name="msg" cols="50" rows="5" placeholder="Message Topic..."></textarea><br/>
+					<input type="submit" name="message" value="Send Message"/>
+				</form><br/>
+				<?php
+				echo"
+				<img style='border:2px solid blue; border-radius: 5px;' src='user/user_images/$image' width='100' height='100' alt=$image/>
+				<p><strong>$name</strong> is member of this site since $register_date</p>
+
+				"
+					?>
+
+					<?php
+
+					if(isset($_POST['message'])){
+						$msg_title=$_POST['msg_title'];
+						$msg=$_POST['msg'];
+
+						$insert="insert into messages(sender,reciever,msg_sub,msg_topic,reply,status,msg_date)values('$user_id','$u_id','$msg_title','$msg','no_reply','unread',NOW())";
+
+						$run_insert=mysqli_query($con,$insert);
+
+						if($run_insert){
+							echo "<center><h2> Message was sent to $name successfully</h2></center>";
+						}
+						else
+						{
+							echo "<center><h2> Message was not sent to $name successfully</h2></center>";
+						}
+					}
+
+					?>
+				</div>
+				<!--content timeline ends-->
+			</div>
+			<!--content ends-->
+			<!--head_wrap ends--> 
+		</div>
+		<!--container ends--> 
+	</body>
+</html>
+<?php } ?>
