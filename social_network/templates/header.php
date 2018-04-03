@@ -14,7 +14,7 @@
 				<!--Header starts-->
 				<div id="header">
 					<img src="images/logo.png"/ style="height:100px; width:350px;float: left;">
-					<form method="post" action="login.php" id="form1">
+					<form method="post" action="" id="form1">
 						<input type="email" name="uemail" placeholder="Email" required="required" />
 						<input type="password" name="upass" placeholder="*****" required="required" />
 						<button name="Login">Login</button> 
