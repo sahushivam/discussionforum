@@ -1,5 +1,5 @@
 # discussionforum
-This site is just like Stack Overflow 
+This site is Question & Answer Site
 
 Index Page of the forum
  
