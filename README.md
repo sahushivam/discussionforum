@@ -56,4 +56,4 @@ Admin adding an user
 ![image10](https://user-images.githubusercontent.com/28194016/38175803-0cad6d0e-3600-11e8-9606-5215053207ea.png)
 
 --------------------------------------------------------------------------------------------------------------------
-Thank you
+Thank you!
